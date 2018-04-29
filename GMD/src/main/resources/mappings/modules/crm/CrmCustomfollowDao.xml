@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.crm.modules.crm.dao.CrmCustomfollowDao">
+    
+	<sql id="crmCustomfollowColumns">
+		a.id AS "id",
+		a.customid AS "customid",
+		a.userid AS "userid",
+		a.followstate AS "followstate",
+		a.startdate AS "startdate",
+		a.plandate AS "plandate",
+		a.lastdate AS "lastdate",
+		a.customtype AS "customtype",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="crmCustomfollowJoins">
+		LEFT JOIN sys_user u9 ON u9.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="CrmCustomfollow">
+		SELECT 
+			<include refid="crmCustomfollowColumns"/>
+		FROM crm_customfollow a
+		<include refid="crmCustomfollowJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CrmCustomfollow">
+		SELECT 
+			<include refid="crmCustomfollowColumns"/>
+		FROM crm_customfollow a
+		<include refid="crmCustomfollowJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="followstate != null and followstate != ''">
+				AND a.followstate = #{followstate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CrmCustomfollow">
+		SELECT 
+			<include refid="crmCustomfollowColumns"/>
+		FROM crm_customfollow a
+		<include refid="crmCustomfollowJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO crm_customfollow(
+			id,
+			customid,
+			userid,
+			followstate,
+			startdate,
+			plandate,
+			lastdate,
+			customtype,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{customid},
+			#{userid},
+			#{followstate},
+			#{startdate},
+			#{plandate},
+			#{lastdate},
+			#{customtype},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE crm_customfollow SET 	
+			customid = #{customid},
+			userid = #{userid},
+			followstate = #{followstate},
+			startdate = #{startdate},
+			plandate = #{plandate},
+			lastdate = #{lastdate},
+			customtype = #{customtype},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE crm_customfollow SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
